@@ -1,0 +1,37 @@
+{
+  "cmake.useCMakePresets": "always",
+  "cmake.configureOnOpen": true,
+
+  "C_Cpp.intelliSenseEngine": "disabled",
+
+  "clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}/build/gcc-debug"
+  ],
+
+  "files.associations": {
+    "stm32f4xx.h": "c",
+    "stm32f4xx_conf.h": "c",
+    "stm32f4xx_gpio.h": "c",
+    "stm32f4xx_rcc.h": "c",
+    "stm32f4xx_usart.h": "c",
+    "stm32f4xx_tim.h": "c"
+  },
+
+  "VsCodeTaskButtons.showCounter": false,
+
+  "VsCodeTaskButtons.tasks": [
+    {
+      "label": "$(gear) Build",
+      "task": "Build STM32F407",
+      "tooltip": "编译 STM32F407 工程",
+      "alignment": "left"
+    },
+    {
+      "label": "$(rocket) Flash",
+      "task": "Flash STM32F407",
+      "tooltip": "编译并烧录 STM32F407",
+      "alignment": "left",
+      "color": "warning"
+    }
+  ]
+}

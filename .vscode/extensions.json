@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "marus25.cortex-debug",
+    "ms-vscode.cmake-tools",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "spencerwmiles.vscode-task-buttons",
+    "dan-c-underwood.arm"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "gcc-debug",
+      "displayName": "GCC Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/gcc-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/arm-none-eabi-gcc.cmake"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "gcc-debug-build",
+      "configurePreset": "gcc-debug"
+    }
+  ]
+}
