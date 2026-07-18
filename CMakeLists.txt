@@ -40,6 +40,9 @@ include_directories(
     Drivers/CMSIS/CM4/CoreSupport
     Drivers/CMSIS/CM4/DeviceSupport/ST/STM32F4xx
     Drivers/STM32F4xx_StdPeriph_Driver/inc
+    FreeRTOS/include
+    FreeRTOS/portable/GCC/ARM_CM4F
+    FreeRTOS/portable/MemMang
 )
 
 file(GLOB USER_SOURCES
@@ -50,6 +53,17 @@ file(GLOB STD_PERIPH_SOURCES
     Drivers/STM32F4xx_StdPeriph_Driver/src/*.c
 )
 
+set(FREERTOS_SOURCES
+    FreeRTOS/Source/tasks.c
+    FreeRTOS/Source/list.c
+    FreeRTOS/Source/queue.c
+    FreeRTOS/Source/timers.c
+    FreeRTOS/Source/event_groups.c
+    FreeRTOS/Source/stream_buffer.c
+    FreeRTOS/portable/GCC/ARM_CM4F/port.c
+    FreeRTOS/portable/MemMang/heap_4.c
+)
+
 set(STARTUP_FILE
     src/startup_stm32f40_41xxx.s
 )
@@ -57,6 +71,7 @@ set(STARTUP_FILE
 add_executable(${TARGET_NAME}.elf
     ${USER_SOURCES}
     ${STD_PERIPH_SOURCES}
+    ${FREERTOS_SOURCES}
     ${CMSIS_SOURCES}
     ${STARTUP_FILE}
 )

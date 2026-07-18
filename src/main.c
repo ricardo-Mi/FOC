@@ -1,27 +1,32 @@
+#include "FreeRTOS.h"
+#include "task.h"
 #include "stm32f4xx.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_rcc.h"
-
-int main(void)
-{
-
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-
-    GPIO_InitTypeDef GPIO_InitStruct;
-
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-
-    GPIO_Init(GPIOC, &GPIO_InitStruct);
+#include "LED.h"
+#include "Key.h"
+#include <stdint.h>
+#include "OLED.h"
 
 
+ int main(void)
+ {
+	/*模块初始化*/
+	OLED_Init();		//OLED初始化
+	
+	/*OLED显示*/
+	OLED_ShowChar(1, 1, 'A');				//1行1列显示字符A
+	
+	OLED_ShowString(1, 3, "HelloWorld!");	//1行3列显示字符串HelloWorld!
+	
+	OLED_ShowNum(2, 1, 12345, 5);			//2行1列显示十进制数字12345，长度为5
+	
+	OLED_ShowSignedNum(2, 7, -66, 2);		//2行7列显示有符号十进制数字-66，长度为2
+	
+	OLED_ShowHexNum(3, 1, 0xAA55, 4);		//3行1列显示十六进制数字0xA5A5，长度为4
+	
+	OLED_ShowBinNum(4, 1, 0xAA55, 16);		//4行1列显示二进制数字0xA5A5，长度为16
+     while (1)
+     {
 
-    while (1)
-    {
-        GPIO_ResetBits(GPIOC, GPIO_Pin_13);
 
-    }
-}
+     }
+ }
