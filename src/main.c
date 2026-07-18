@@ -5,28 +5,30 @@
 #include "Key.h"
 #include <stdint.h>
 #include "OLED.h"
+#include "Timer.h"
 
+uint16_t Num;			//定义在定时器中断里自增的变量
 
  int main(void)
  {
-	/*模块初始化*/
-	OLED_Init();		//OLED初始化
+	OLED_Init();		
+	Timer_Init();
+	OLED_ShowString(1, 1, "Num:");			//1行1列显示字符串Num:
 	
-	/*OLED显示*/
-	OLED_ShowChar(1, 1, 'A');				//1行1列显示字符A
-	
-	OLED_ShowString(1, 3, "HelloWorld!");	//1行3列显示字符串HelloWorld!
-	
-	OLED_ShowNum(2, 1, 12345, 5);			//2行1列显示十进制数字12345，长度为5
-	
-	OLED_ShowSignedNum(2, 7, -66, 2);		//2行7列显示有符号十进制数字-66，长度为2
-	
-	OLED_ShowHexNum(3, 1, 0xAA55, 4);		//3行1列显示十六进制数字0xA5A5，长度为4
-	
-	OLED_ShowBinNum(4, 1, 0xAA55, 16);		//4行1列显示二进制数字0xA5A5，长度为16
      while (1)
      {
+
+		OLED_ShowNum(1, 5, Num, 5);			//不断刷新显示Num变量
 
 
      }
  }
+
+ void TIM6_DAC_IRQHandler(void)
+{
+    if (TIM_GetITStatus(TIM6, TIM_IT_Update) == SET)
+    {
+		Num++;
+        TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
+    }
+}
