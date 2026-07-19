@@ -1,4 +1,5 @@
 #include "FreeRTOS.h"
+#include "stm32f4xx_gpio.h"
 #include "task.h"
 #include "stm32f4xx.h"
 #include "LED.h"
@@ -6,29 +7,89 @@
 #include <stdint.h>
 #include "OLED.h"
 #include "Timer.h"
+#include "Exti.h"
+#include "PWM.h"
 
-uint16_t Num;			//定义在定时器中断里自增的变量
+
+uint8_t i;
+
+
+ static void Breathe_Task(void *pvParam)
+{
+    (void)pvParam;
+    uint8_t i;
+
+    while (1)
+    {
+        for (i = 0; i <= 100; i++)
+        {
+            PWM_SetCompare1(i);                  // 0% → 100%
+            vTaskDelay(pdMS_TO_TICKS(10));             // 10ms 步进
+        }
+        for (i = 0; i <= 100; i++)
+        {
+            PWM_SetCompare1(100 - i);            // 100% → 0%
+            vTaskDelay(pdMS_TO_TICKS(10));
+        }
+    }
+}
+
 
  int main(void)
  {
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	
+
 	OLED_Init();		
-	Timer_Init();
-	OLED_ShowString(1, 1, "Num:");			//1行1列显示字符串Num:
-	
-     while (1)
-     {
+    PWM_Init();
 
-		OLED_ShowNum(1, 5, Num, 5);			//不断刷新显示Num变量
+    xTaskCreate(Breathe_Task, "Breathe", 128, NULL, 1, NULL);
 
+    vTaskStartScheduler();                             
 
-     }
+    for (;;) { }    
+
  }
 
- void TIM6_DAC_IRQHandler(void)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /* ==================== FreeRTOS 钩子 ==================== */
+void vApplicationMallocFailedHook(void)
 {
-    if (TIM_GetITStatus(TIM6, TIM_IT_Update) == SET)
-    {
-		Num++;
-        TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
-    }
+    taskDISABLE_INTERRUPTS();
+    for (;;) { }
 }
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+    (void)xTask;
+    (void)pcTaskName;
+    taskDISABLE_INTERRUPTS();
+    for (;;) { }
+}
+
+

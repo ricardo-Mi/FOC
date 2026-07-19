@@ -14,7 +14,7 @@ void Key_Init(void)
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN;
     GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_UP;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_Init(GPIOF, &GPIO_InitStruct);
 }
 
 uint8_t Key_GetNum(void)

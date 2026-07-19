@@ -1,5 +1,9 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_tim.h"
+#include <stdint.h>
+
+
+volatile uint16_t Num;
 
 void Timer_Init(void)
 {
@@ -27,11 +31,14 @@ void Timer_Init(void)
 
 }
 
-// void TIM6_DAC_IRQHandler(void)
-// {
-//     if (TIM_GetITStatus(TIM6, TIM_IT_Update) == SET)
-//     {
-//         TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
-//         // 1ms 定时操作
-//     }
-// }
+ void TIM6_DAC_IRQHandler(void)
+{
+    if (TIM_GetITStatus(TIM6, TIM_IT_Update) == SET)
+    {
+		Num++;
+        TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
+    }
+}
+
+
+

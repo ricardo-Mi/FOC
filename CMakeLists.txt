@@ -74,6 +74,8 @@ add_executable(${TARGET_NAME}.elf
     ${FREERTOS_SOURCES}
     ${CMSIS_SOURCES}
     ${STARTUP_FILE}
+    inc/EXTI.h
+    inc/PWM.h
 )
 
 set(LINKER_SCRIPT
