@@ -9,46 +9,53 @@
 #include "Timer.h"
 #include "Exti.h"
 #include "PWM.h"
+#include "task.h"
+#include "user_task.h"
+#include "USART.h"
+#include "queue.h"
+#include "semphr.h"
+
+QueueHandle_t g_usart1_rx_queue = NULL;
+
+SemaphoreHandle_t g_key_semaphore = NULL;
 
 
-uint8_t i;
-
-
- static void Breathe_Task(void *pvParam)
+int main(void)
 {
-    (void)pvParam;
-    uint8_t i;
+    SystemInit();
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
+    LED_GPIO_Init();
+
+    g_usart1_rx_queue = xQueueCreate(64, sizeof(uint8_t));
+
+    if(g_usart1_rx_queue == NULL)
+    {
+        // 创建队列失败，处理错误
+        while(1);
+    }
+
+    g_key_semaphore = xSemaphoreCreateBinary();
+
+    if(g_key_semaphore == NULL)
+    {
+        // 创建信号量失败，处理错误
+        while(1);
+    }
+
+    USART1_Init();
+
+    xTaskCreate(LED_Task, "LED_Task", 128, NULL, 2, NULL);
+    xTaskCreate(USART_Command_Task, "USART_Command_Task", 256, NULL, 2, NULL);
+
+    vTaskStartScheduler();
+
 
     while (1)
     {
-        for (i = 0; i <= 100; i++)
-        {
-            PWM_SetCompare1(i);                  // 0% → 100%
-            vTaskDelay(pdMS_TO_TICKS(10));             // 10ms 步进
-        }
-        for (i = 0; i <= 100; i++)
-        {
-            PWM_SetCompare1(100 - i);            // 100% → 0%
-            vTaskDelay(pdMS_TO_TICKS(10));
-        }
     }
 }
 
-
- int main(void)
- {
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	
-
-	OLED_Init();		
-    PWM_Init();
-
-    xTaskCreate(Breathe_Task, "Breathe", 128, NULL, 1, NULL);
-
-    vTaskStartScheduler();                             
-
-    for (;;) { }    
-
- }
 
 
 
@@ -81,15 +88,33 @@ uint8_t i;
 void vApplicationMallocFailedHook(void)
 {
     taskDISABLE_INTERRUPTS();
-    for (;;) { }
+
+    while (1)
+    {
+        /*
+         * 内存申请失败会进入这里。
+         * 一般是 configTOTAL_HEAP_SIZE 太小，或者任务栈分配太大。
+         */
+    }
+
+
 }
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
     (void)xTask;
     (void)pcTaskName;
+
     taskDISABLE_INTERRUPTS();
-    for (;;) { }
+
+    while (1)
+    {
+        /*
+         * 任务栈溢出会进入这里。
+         * 一般是某个任务栈给小了，比如 xTaskCreate 里的 128 不够。
+         */
+    }
+
 }
 
 

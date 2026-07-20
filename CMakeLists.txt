@@ -76,6 +76,9 @@ add_executable(${TARGET_NAME}.elf
     ${STARTUP_FILE}
     inc/EXTI.h
     inc/PWM.h
+    inc/USART.h
+    inc/user_task.h
+    inc/Delay.h
 )
 
 set(LINKER_SCRIPT
