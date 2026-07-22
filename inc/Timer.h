@@ -1,6 +1,9 @@
 #ifndef __TIMER_H
 #define __TIMER_H
 
+#define TIMER_CONTROL_FREQUENCY_HZ   100U
+#define TIMER_CONTROL_PERIOD_SECONDS (1.0f / (float)TIMER_CONTROL_FREQUENCY_HZ)
+
 void Timer_Init(void);
 
 #endif

@@ -79,6 +79,13 @@ add_executable(${TARGET_NAME}.elf
     inc/USART.h
     inc/user_task.h
     inc/Delay.h
+    inc/Motor.h
+    inc/Encoder.h
+    inc/PID.h
+    inc/Track.h
+    inc/MyI2C.h
+    src/MPU6050.c
+    inc/MPU6050_Reg.h
 )
 
 set(LINKER_SCRIPT

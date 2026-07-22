@@ -4,6 +4,9 @@
 #include "stm32f4xx_rcc.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "Delay.h"
+
+
 
 void Key_Init(void)
 {
@@ -17,37 +20,33 @@ void Key_Init(void)
     GPIO_Init(GPIOF, &GPIO_InitStruct);
 }
 
-uint8_t Key_GetNum(void)
+uint8_t Key_GetNum1(void)
 {
     uint8_t KeyNum = 0;
 
     if (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_1) == 0)
     {
-        vTaskDelay(pdMS_TO_TICKS(20));
-        if (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_1) == 1)
-        {
-            return 0;
-        }
-        while (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_1) == 0)
-        {
-            vTaskDelay(pdMS_TO_TICKS(10));
-        }
+        Delay_ms(20);
+        while (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_1) == 0);
+        Delay_ms(20);
         KeyNum = 1;
-    }
-
-    if (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_2) == 0)
-    {
-        vTaskDelay(pdMS_TO_TICKS(20));
-        if (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_2) == 1)
-        {
-            return KeyNum;
-        }
-        while (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_2) == 0)
-        {
-            vTaskDelay(pdMS_TO_TICKS(10));
-        }
-        KeyNum = 2;
     }
 
     return KeyNum;
 }
+
+uint8_t Key_GetNum2(void)
+{
+    uint8_t KeyNum = 0;
+
+    if (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_2) == 0)
+    {
+        Delay_ms(20);
+        while (GPIO_ReadInputDataBit(GPIOF, GPIO_Pin_2) == 0);
+        Delay_ms(20);
+        KeyNum = 1;
+    }
+
+    return KeyNum;
+}
+
