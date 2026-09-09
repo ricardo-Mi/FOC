@@ -5,9 +5,8 @@
 #include "task.h"
 
 void LED_GPIO_Init(void);
-void LED_Task(void *pvParameters);
-void Speed_Task(void *pvParameters);
-void USART_Command_Task(void *pvParameters);
+void vLED1Task(void *pvParameters);
+void vLED2Task(void *pvParameters);
 
 
 
