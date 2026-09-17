@@ -2,10 +2,24 @@
 #include "OLED_Font.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "OLED.h"
+#include "MPU6050.h"
+#include "user_task.h"
+#include "Delay.h"
+
+
+
 
 /*引脚配置*/
 #define OLED_W_SCL(x)		GPIO_WriteBit(GPIOF, GPIO_Pin_5, (BitAction)(x))
 #define OLED_W_SDA(x)		GPIO_WriteBit(GPIOF, GPIO_Pin_6, (BitAction)(x))
+
+extern QueueHandle_t xMaixbox;
+
+
 
 /*引脚初始化*/
 void OLED_I2C_Init(void)
@@ -32,10 +46,10 @@ void OLED_I2C_Init(void)
   */
 void OLED_I2C_Start(void)
 {
-	OLED_W_SDA(1);
-	OLED_W_SCL(1);
-	OLED_W_SDA(0);
-	OLED_W_SCL(0);
+	OLED_W_SDA(1); Delay_us(2);
+	OLED_W_SCL(1); Delay_us(2);
+	OLED_W_SDA(0); Delay_us(2);
+	OLED_W_SCL(0); Delay_us(2);
 }
 
 /**
@@ -45,9 +59,9 @@ void OLED_I2C_Start(void)
   */
 void OLED_I2C_Stop(void)
 {
-	OLED_W_SDA(0);
-	OLED_W_SCL(1);
-	OLED_W_SDA(1);
+	OLED_W_SDA(0); Delay_us(2);
+	OLED_W_SCL(1); Delay_us(2);
+	OLED_W_SDA(1); Delay_us(2);
 }
 
 /**
@@ -60,12 +74,12 @@ void OLED_I2C_SendByte(uint8_t Byte)
 	uint8_t i;
 	for (i = 0; i < 8; i++)
 	{
-		OLED_W_SDA(!!(Byte & (0x80 >> i)));
-		OLED_W_SCL(1);
-		OLED_W_SCL(0);
+		OLED_W_SDA(!!(Byte & (0x80 >> i))); Delay_us(2);
+		OLED_W_SCL(1); Delay_us(2);
+		OLED_W_SCL(0); Delay_us(2);
 	}
-	OLED_W_SCL(1);	//额外的一个时钟，不处理应答信号
-	OLED_W_SCL(0);
+	OLED_W_SCL(1); Delay_us(2);	//额外的一个时钟，不处理应答信号
+	OLED_W_SCL(0); Delay_us(2);
 }
 
 /**
@@ -321,4 +335,55 @@ void OLED_Init(void)
 	OLED_WriteCommand(0xAF);	//开启显示
 		
 	OLED_Clear();				//OLED清屏
+}
+
+
+static void FloatToStr(char *dst, float value)
+{
+    char *p = dst;
+    int32_t scaled;
+
+    if (value < 0.0f)
+    {
+        *p++ = '-';
+        value = -value;
+    }
+
+    scaled = (int32_t)(value * 100.0f + 0.5f);	/* 保留两位小数 */
+
+    p = AppendUInt(p, (uint32_t)(scaled / 100));
+    *p++ = '.';
+    *p++ = (char)('0' + (scaled / 10) % 10);
+    *p++ = (char)('0' + scaled % 10);
+    *p = '\0';
+}
+
+void vOLEDTask(void *pvParameters)
+{
+    (void)pvParameters;
+
+    MPUData_t data;
+    char buffer[20];
+
+
+    while (1)
+    {
+        xQueuePeek(xMaixbox, &data, portMAX_DELAY);	/* 读取邮箱，不取走 */
+
+        OLED_ShowString(1, 1, "MPU6050");
+
+        OLED_ShowString(2, 1, "Ax:");
+        FloatToStr(buffer, data.AccX);
+        OLED_ShowString(2, 4, buffer);
+
+        OLED_ShowString(3, 1, "Ay:");
+        FloatToStr(buffer, data.AccY);
+        OLED_ShowString(3, 4, buffer);
+
+        OLED_ShowString(4, 1, "Az:");
+        FloatToStr(buffer, data.AccZ);
+        OLED_ShowString(4, 4, buffer);
+
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
 }

@@ -15,8 +15,11 @@
 /* Task name max length */
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 
-/* Scheduler: 1 = preemptive, 0 = cooperative */
+/* Scheduler: 1 = preemptive, 0 = cooperative */     //1：抢占式调度  0：协作式调度
 #define configUSE_PREEMPTION                     1
+
+ /* 0=关时间片，1=开 */
+#define configUSE_TIME_SLICING                   1   
 
 /* Use 32-bit tick count */
 #define configUSE_16_BIT_TICKS                   0
@@ -62,6 +65,8 @@
 #define INCLUDE_xTimerPendFunctionCall           1
 #define INCLUDE_xTaskAbortDelay                  1
 #define INCLUDE_xTaskGetHandle                   1
+#define INCLUDE_vTaskSuspend                     1
+#define INCLUDE_vTaskDelete                      1
 
 /* Run time stats (off by default for smaller code) */
 #define configGENERATE_RUN_TIME_STATS            0

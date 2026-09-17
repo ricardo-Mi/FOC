@@ -37,6 +37,7 @@ add_compile_options(
 
 include_directories(
     inc
+    Drivers
     Drivers/CMSIS/CM4/CoreSupport
     Drivers/CMSIS/CM4/DeviceSupport/ST/STM32F4xx
     Drivers/STM32F4xx_StdPeriph_Driver/inc
@@ -79,6 +80,10 @@ add_executable(${TARGET_NAME}.elf
     inc/USART.h
     inc/user_task.h
     inc/Delay.h
+    Drivers/Key_device.h
+    Drivers/Key_device.c
+    inc/MPU6050.h
+    inc/MPU6050_Reg.h
 )
 
 set(LINKER_SCRIPT
