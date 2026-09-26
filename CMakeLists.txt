@@ -77,6 +77,8 @@ add_executable(${TARGET_NAME}.elf
     ${STARTUP_FILE}
     inc/EXTI.h
     inc/PWM.h
+    inc/FOC.h
+    inc/AS5600.h
     inc/USART.h
     inc/user_task.h
     inc/Delay.h
@@ -84,6 +86,8 @@ add_executable(${TARGET_NAME}.elf
     Drivers/Key_device.c
     inc/MPU6050.h
     inc/MPU6050_Reg.h
+    src/AS5600.c
+    inc/AS5600.h
 )
 
 set(LINKER_SCRIPT

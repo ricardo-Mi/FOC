@@ -9,15 +9,15 @@
 #include "MPU6050.h"
 #include "user_task.h"
 #include "Delay.h"
+#include "FOC.h"
+#include "AS5600.h"
 
 
 
 
 /*引脚配置*/
-#define OLED_W_SCL(x)		GPIO_WriteBit(GPIOF, GPIO_Pin_5, (BitAction)(x))
-#define OLED_W_SDA(x)		GPIO_WriteBit(GPIOF, GPIO_Pin_6, (BitAction)(x))
-
-extern QueueHandle_t xMaixbox;
+#define OLED_W_SCL(x)		GPIO_WriteBit(GPIOF, GPIO_Pin_9, (BitAction)(x))
+#define OLED_W_SDA(x)		GPIO_WriteBit(GPIOF, GPIO_Pin_10, (BitAction)(x))
 
 
 
@@ -30,9 +30,9 @@ void OLED_I2C_Init(void)
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
  	GPIO_Init(GPIOF, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
  	GPIO_Init(GPIOF, &GPIO_InitStructure);
 	
 	OLED_W_SCL(1);
@@ -342,6 +342,7 @@ static void FloatToStr(char *dst, float value)
 {
     char *p = dst;
     int32_t scaled;
+    int len;
 
     if (value < 0.0f)
     {
@@ -355,6 +356,15 @@ static void FloatToStr(char *dst, float value)
     *p++ = '.';
     *p++ = (char)('0' + (scaled / 10) % 10);
     *p++ = (char)('0' + scaled % 10);
+
+    /* 左对齐补齐到7个字符, 避免残留上一次的长数字 */
+    len = (int)(p - dst);
+    while (len < 7)
+    {
+        *p++ = ' ';
+        len++;
+    }
+
     *p = '\0';
 }
 
@@ -362,27 +372,25 @@ void vOLEDTask(void *pvParameters)
 {
     (void)pvParameters;
 
-    MPUData_t data;
     char buffer[20];
 
 
     while (1)
     {
-        xQueuePeek(xMaixbox, &data, portMAX_DELAY);	/* 读取邮箱，不取走 */
+        OLED_ShowString(1, 1, "T:");			/* 开环目标速度 */
+        FloatToStr(buffer, target_velocity);
+        OLED_ShowString(1, 3, buffer);
+        OLED_ShowString(1, 11, "rad/s");
 
-        OLED_ShowString(1, 1, "MPU6050");
+        OLED_ShowString(2, 1, "V:");			/* 编码器实测速度 */
+        FloatToStr(buffer, AS5600_GetVelocity());
+        OLED_ShowString(2, 3, buffer);
+        OLED_ShowString(2, 11, "rad/s");
 
-        OLED_ShowString(2, 1, "Ax:");
-        FloatToStr(buffer, data.AccX);
-        OLED_ShowString(2, 4, buffer);
-
-        OLED_ShowString(3, 1, "Ay:");
-        FloatToStr(buffer, data.AccY);
-        OLED_ShowString(3, 4, buffer);
-
-        OLED_ShowString(4, 1, "Az:");
-        FloatToStr(buffer, data.AccZ);
-        OLED_ShowString(4, 4, buffer);
+        OLED_ShowString(3, 1, "A:");			/* 编码器实测角度(带圈数) */
+        FloatToStr(buffer, AS5600_GetAngle());
+        OLED_ShowString(3, 3, buffer);
+        OLED_ShowString(3, 11, "rad");
 
         vTaskDelay(pdMS_TO_TICKS(100));
     }
