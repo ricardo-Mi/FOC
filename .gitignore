@@ -1,3 +1,16 @@
+# 完整工程只保留在本地用于编译, 仓库仅上传各版本的 .c/.h 快照
+/.vscode/
+/cmake/
+/Drivers/
+/FreeRTOS/
+/inc/
+/linker/
+/openocd/
+/src/
+/CMakeLists.txt
+/CMakePresets.json
+
+# 构建产物
 build/
 *.elf
 *.hex
