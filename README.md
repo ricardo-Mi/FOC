@@ -10,3 +10,5 @@
   - 含 `FOC.c/h`、`AS5600.c/h`、`main.c`、`OLED.c`、`Key.c`
 - `V2_闭环位置FOC`: 电角度零点校准 + 位置环P控制(目标角度写死) + OLED显示角度/速度/校准状态 + PC0按键启停
   - 含 `FOC.c/h`、`AS5600.c/h`、`main.c`、`OLED.c`、`Key.c`
+- `V3_闭环速度FOC`: 电角度零点校准 + 速度环PID+低通滤波(目标速度写死, AS5600测速) + OLED显示 + PC0按键启停
+  - 含 `FOC.c/h`、`AS5600.c/h`、`PID.c/h`、`LowPassFilter.c/h`、`Delay.c/h`、`main.c`、`OLED.c`、`Key.c`
